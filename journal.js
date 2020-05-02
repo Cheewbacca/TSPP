@@ -11,15 +11,6 @@ function setHandlerForAbsentInputs() {
 
 setHandlerForAbsentInputs(); // call to setHandlerForAbsentInputs
 
-// Cell input handler
-function dineAllSymbolsBesideN(e) { 
-    let input = e.target; // get this cell
-    let value = input.value; // get value from this cell 
-    if (e.data !== 'н' || value.length == 2) { // if user inputed not 'н' or value from cell is to long
-        value = value.slice(0, value.length - 1); // get first symbol of value
-        input.value = value; // put this symbol into cell
-    }
-}
 
 let form = document.forms['journal']; // get journal
 form.addEventListener('submit', function (e) { // if user submit the form
