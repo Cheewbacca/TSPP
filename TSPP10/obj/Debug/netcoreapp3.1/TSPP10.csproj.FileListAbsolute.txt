@@ -1,0 +1,13 @@
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.exe
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.deps.json
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.runtimeconfig.json
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.runtimeconfig.dev.json
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.dll
+C:\Users\DELL\source\repos\TSPP10\TSPP10\bin\Debug\netcoreapp3.1\TSPP10.pdb
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.csprojAssemblyReference.cache
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.csproj.CoreCompileInputs.cache
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.AssemblyInfoInputs.cache
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.AssemblyInfo.cs
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.dll
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.pdb
+C:\Users\DELL\source\repos\TSPP10\TSPP10\obj\Debug\netcoreapp3.1\TSPP10.genruntimeconfig.cache
