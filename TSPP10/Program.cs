@@ -16,6 +16,8 @@ namespace TSPP10
 
             public string Customer;
 
+            public string Sertifikat;
+
             public abstract void MakeOrder();
 
             public abstract int GetCount();
@@ -46,11 +48,12 @@ namespace TSPP10
 
         class OrderDevelopment : OrderFlyweight
         {
-            public OrderDevelopment(string customer, int count, string subject)
+            public OrderDevelopment(string customer, int count, string subject, string sertifikat)
             {
                 Customer = customer;
                 Subject = subject;
                 Count = count;
+                Sertifikat = sertifikat;
             }
 
             public override void MakeOrder()
@@ -59,6 +62,7 @@ namespace TSPP10
                 Console.WriteLine("Замовник: " + Customer);
                 Console.WriteLine("Замовлено: " + Subject);
                 Console.WriteLine("Кількість: " + Count);
+                Console.WriteLine("Розробку дозволено ліцензією: " + Sertifikat);
             }
 
             public override int GetCount()
@@ -71,10 +75,10 @@ namespace TSPP10
         {
             Dictionary<string, OrderFlyweight> Orders = new Dictionary<string, OrderFlyweight>();
 
-            public Order(string customer, string subject, int count)
+            public Order(string customer, string subject, int count, string sertifikat)
             {
                 Orders.Add("Виготовлення", new OrderProduction(customer, count, subject));
-                Orders.Add("Розробка", new OrderDevelopment(customer, count, subject));
+                Orders.Add("Розробка", new OrderDevelopment(customer, count, subject, sertifikat));
             }
 
             public OrderFlyweight NewOrder(string key)
@@ -173,13 +177,93 @@ namespace TSPP10
             }
         }
 
+        abstract class Command
+        {
+            public abstract string Execute();
+        }
+
+        class Sertifikat : Command
+        {
+            ControlService service;
+
+            public Sertifikat(ControlService r)
+            {
+                service = r;
+            }
+
+            public override string Execute()
+            {
+                return service.Operation();
+            }
+
+        }
+
+        class ControlService
+        {
+            public string Name { get; set; }
+            public ControlService(string name)
+            {
+                Name = name;
+            }
+
+            public string Operation()
+            {
+                Random rd = new Random();
+                const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
+                char[] chars = new char[5];
+
+                for (int i = 0; i < 5; i++)
+                {
+                    chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+                }
+
+                return new string(chars);
+            }
+        }
+
+        class Invoker
+        {
+            Command command;
+            public void SetCommand(Command c)
+            {
+                command = c;
+            }
+
+            public string Run()
+            {
+                return command.Execute();
+            }
+
+        }
+
+        class Manager
+        {
+            public string Name { get; set; }
+
+            public Manager(string name)
+            {
+                Name = name;
+            }
+
+            public string CommunicateWithControlService()
+            {
+                Invoker invoker = new Invoker();
+                ControlService receiver = new ControlService("Служба контролю");
+                Sertifikat sertifikat = new Sertifikat(receiver);
+                invoker.SetCommand(sertifikat);
+                return invoker.Run();
+            }
+        }
+
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
 
+            Manager Ivan = new Manager("Ivan");
+
             MilitaryIndustrialComplex developer;
 
-            Order orderForNewProduction = new Order("Президент України", "Танк", 3);
+            Order orderForNewProduction = new Order("Президент України", "Танк", 3, Ivan.CommunicateWithControlService());
             OrderFlyweight production = orderForNewProduction.NewOrder("Виготовлення");
             if (production != null)
             {
@@ -200,7 +284,7 @@ namespace TSPP10
                 Console.WriteLine("\n");
             }
 
-            Order orderForNewDevelopment = new Order("Міністр оборони України", "Пістолет", 4);
+            Order orderForNewDevelopment = new Order("Міністр оборони України", "Пістолет", 4, Ivan.CommunicateWithControlService());
             OrderFlyweight development = orderForNewDevelopment.NewOrder("Розробка");
             if (development != null)
             {
