@@ -23,7 +23,7 @@ namespace TSPP10
 
         class OrderProduction : OrderFlyweight
         {
-            public OrderProduction(string customer, int count, string subject) 
+            public OrderProduction(string customer, int count, string subject)
             {
                 Customer = customer;
                 Subject = subject;
