@@ -73,15 +73,25 @@ namespace TSPP10
 
         class Order
         {
-            Dictionary<string, OrderFlyweight> Orders = new Dictionary<string, OrderFlyweight>();
+            
+            public string Customer { get; set; }
+            public string Subject { get; set; }
+            public int Count { get; set; }
+            public string Sertifikat { get; set; }
+
+            Dictionary<int, OrderFlyweight> Orders = new Dictionary<int, OrderFlyweight>();
 
             public Order(string customer, string subject, int count, string sertifikat)
             {
-                Orders.Add("Виготовлення", new OrderProduction(customer, count, subject));
-                Orders.Add("Розробка", new OrderDevelopment(customer, count, subject, sertifikat));
+                Customer = customer;
+                Subject = subject;
+                Count = count;
+                Sertifikat = sertifikat;
+                Orders.Add(1 , new OrderProduction(Customer, Count, Subject));
+                Orders.Add(2 , new OrderDevelopment(Customer, Count, Subject, Sertifikat));
             }
 
-            public OrderFlyweight NewOrder(string key)
+            public OrderFlyweight NewOrder(int key)
             {
                 if (Orders.ContainsKey(key))
                 {
@@ -209,7 +219,7 @@ namespace TSPP10
             public string Operation()
             {
                 Random rd = new Random();
-                const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@$?_-";
+                const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789";
                 char[] chars = new char[5];
 
                 for (int i = 0; i < 5; i++)
@@ -255,24 +265,71 @@ namespace TSPP10
             }
         }
 
-        static void Main(string[] args)
+        abstract class OrderHandler
         {
-            Console.OutputEncoding = Encoding.UTF8;
+            public OrderHandler Sucessor { get; set; }
+            public abstract void orderHandlerRequest(int condition);
+        }
 
-            Manager Ivan = new Manager("Ivan");
+        class HandlerToStorage : OrderHandler
+        {
+           
+            public override void orderHandlerRequest(int condition)
+            {
+                if (condition == 1)
+                {
+                    Console.WriteLine("Пошук в базі даних...");
+                    Console.WriteLine("Товар знайдено!");
+                }
+                else if (Sucessor != null)
+                {
+                    Sucessor.orderHandlerRequest(condition);
+                }
+            }
+        }
 
-            MilitaryIndustrialComplex developer;
+        class HandlerToMilitaryIndustrialComplex : OrderHandler
+        {
+            public override void orderHandlerRequest(int condition)
+            {
+                if (condition == 2)
+                {
+                    Console.WriteLine("Отримуємо сертифікат на розробку...");
+                }
+                else if (Sucessor != null)
+                {
+                    Sucessor.orderHandlerRequest(condition);
+                }
+            }
+        }
 
-            Order orderForNewProduction = new Order("Президент України", "Танк", 3, Ivan.CommunicateWithControlService());
-            OrderFlyweight production = orderForNewProduction.NewOrder("Виготовлення");
+        class Client
+        {
+            public int makeOrder()
+            {
+                Console.WriteLine("Введіть 1 для замовлення існуючого товару \n");
+                Console.WriteLine("Або 2 для розробки нового \n");
+                int orderType = Convert.ToInt32(Console.ReadLine());
+
+                OrderHandler h1 = new HandlerToStorage();
+                OrderHandler h2 = new HandlerToMilitaryIndustrialComplex();
+                h1.Sucessor = h2;
+                h1.orderHandlerRequest(orderType);
+
+                return orderType;
+            }
+        }
+
+        static void makeProdiction(int orderType, Order orderForNewProduction, MilitaryIndustrialComplex developer)
+        {
+            OrderFlyweight production = orderForNewProduction.NewOrder(orderType);
+
             if (production != null)
             {
                 production.MakeOrder();
 
                 Console.WriteLine("\n");
 
-                // Створення обь'єкта-ВПК - виробника танків 
-                developer = new TankDeveloper("ДП «Харківський завод спеціальних машин»", "EF550423");
                 Console.WriteLine("\n");
                 // Замовлення на створення танку
                 for (int i = 0; i < production.GetCount(); i++)
@@ -283,9 +340,11 @@ namespace TSPP10
 
                 Console.WriteLine("\n");
             }
+        }
 
-            Order orderForNewDevelopment = new Order("Міністр оборони України", "Пістолет", 4, Ivan.CommunicateWithControlService());
-            OrderFlyweight development = orderForNewDevelopment.NewOrder("Розробка");
+        static void makeNewDevelopment(int orderType, Order orderForNewDevelopment, MilitaryIndustrialComplex developer)
+        {
+            OrderFlyweight development = orderForNewDevelopment.NewOrder(orderType);
             if (development != null)
             {
                 development.MakeOrder();
@@ -302,8 +361,42 @@ namespace TSPP10
                     Console.WriteLine("\n");
                 }
             }
+        }
 
-            Console.ReadLine();
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+
+            Manager Ivan = new Manager("Ivan");
+
+            Client client = new Client();
+
+            Order orderForNewProduction, orderForNewDevelopment;
+
+            while (true)
+            {
+                int orderType = client.makeOrder();
+
+                if (orderType == 1)
+                {
+                    Console.WriteLine("Введіть замовника: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine("Кількість продукції: ");
+                    int count = Convert.ToInt32(Console.ReadLine());
+                    orderForNewProduction = new Order(name, "Танк", count, Ivan.CommunicateWithControlService());
+                    makeProdiction(orderType, orderForNewProduction, new TankDeveloper("ДП «Харківський завод спеціальних машин»", "EF550423"));
+                }
+                if (orderType == 2)
+                {
+                    Console.WriteLine("Введіть замовника: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine("Кількість продукції: ");
+                    int count = Convert.ToInt32(Console.ReadLine());
+                    orderForNewDevelopment = new Order(name, "Пістолет", count, Ivan.CommunicateWithControlService());
+                    makeNewDevelopment(orderType, orderForNewDevelopment, new WeaponDeveloper("ВАТ «Завод 'Маяк'»", "KL449293")); 
+                }
+                Console.ReadLine();
+            }
         }
     }
 }
